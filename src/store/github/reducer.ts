@@ -1,11 +1,18 @@
-import { GithubActionTypes, type GithubActions, type GithubState } from "./types";
+import { loadFromStorage, saveToStorage } from "@/helpers/localStorage";
+import {
+  GithubActionTypes,
+  type GithubActions,
+  type GithubState,
+} from "./types";
+
+const persistedData = loadFromStorage();
 
 const initialState: GithubState = {
-  user: null,
-  repos: [],
+  user: persistedData?.user || null,
+  repos: persistedData?.repos || [],
   loading: false,
   error: null,
-}
+};
 
 const githubReducer = (
   state = initialState,
@@ -18,23 +25,31 @@ const githubReducer = (
         loading: true,
         error: null,
         user: null,
-        repos: []
+        repos: [],
       };
-    
-    case GithubActionTypes.FETCH_USER_SUCCESS:
-      return {
+
+    case GithubActionTypes.FETCH_USER_SUCCESS: {
+      const nextState = {
         ...state,
         loading: false,
         user: action.payload.user,
         repos: action.payload.repos,
-      }
+      };
+
+      saveToStorage({
+        user: nextState.user,
+        repos: nextState.repos,
+      });
+
+      return nextState;
+    }
 
     case GithubActionTypes.FETCH_USER_FAILURE:
       return {
         ...state,
         loading: false,
         error: action.payload,
-      }
+      };
 
     case GithubActionTypes.CLEAR_USER:
       return {
@@ -42,11 +57,11 @@ const githubReducer = (
         user: null,
         repos: [],
         error: null,
-      }
+      };
 
     default:
       return state;
   }
-}
+};
 
 export default githubReducer;

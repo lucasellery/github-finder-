@@ -69,8 +69,7 @@ export function RepostList() {
           <div className="relative">
             <Input
               type="text"
-              className="repo-filter"
-              placeholder="filter repositories..."
+              placeholder="Buscar repositórios..."
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
             />
