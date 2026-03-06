@@ -6,8 +6,9 @@ import { useDarkMode } from "@/hooks/useDarkMode";
 import type { AppDispatch } from "@/store";
 import { selectError, selectLoading } from "@/store/github/selectors";
 import { GithubActionTypes } from "@/store/github/types";
-import { Cat, CircleX, LoaderCircle, Moon, Sun, TriangleAlert } from "lucide-react";
+import { CircleX, LoaderCircle, Moon, Sun, TriangleAlert } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
+import githubIcon from "@/assets/icons/github.png";
 
 export function Home() {
   const { isDark, toggleDarkMode } = useDarkMode();
@@ -32,7 +33,7 @@ export function Home() {
         </Button>
 
         <h1 className="gap-4 text-4xl flex items-center self-center-safe font-bold text-center mb-8 text-primary dark:text-primary-light">
-          <Cat className="" color="var(--primary)" size={32} />
+          <img src={githubIcon} alt="Github Logo" className="w-10 h-10 dark:bg-white dark:rounded-full" />
           Github Finder
         </h1>
       </header>
@@ -51,7 +52,7 @@ export function Home() {
 
         {loading && (
           <div className="mt-10 flex items-center justify-center">
-            <LoaderCircle className="transform animate-spin" size={32} />
+            <LoaderCircle className="transform animate-spin text-primary" size={32} />
           </div>
         )}
 

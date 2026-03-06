@@ -28,8 +28,6 @@ export function UserProfile() {
           followers={user.followers}
         />
       </div>
-
-
     </div>
   );
 }

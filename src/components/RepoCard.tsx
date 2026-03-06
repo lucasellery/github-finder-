@@ -32,7 +32,7 @@ export function RepoCard({
   return (
     <div
       key={id}
-      className="border p-2 rounded-md hover:bg-chart-50 hover:opacity-90 dark:hover:bg-primary transition-colors]"
+      className="border p-2 rounded-md hover:bg-chart-50 hover:opacity-75 transition-colors]"
     >
       <div className="flex flex-row md:items-center justify-between gap-2 mb-1">
         <a

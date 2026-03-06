@@ -10,14 +10,26 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { RepoCard } from "./RepoCard";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 type SortKey = "updated" | "stars";
+
+const REPOS_PER_PAGE = 10;
 
 export function RepostList() {
   const repos = useSelector(selectRepos);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<SortKey>("updated");
   const [selectedFilter, setSelectedFilter] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filtered = useMemo(() => {
     return repos
@@ -35,6 +47,19 @@ export function RepostList() {
       });
   }, [repos, search, sortBy]);
 
+  const handleSearch = (value:string) => {
+    setSearch(value);
+    setCurrentPage(1);
+  };
+
+  const handleSort = (key: SortKey) => {
+    setSortBy(key);
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(filtered.length / REPOS_PER_PAGE);
+  const paginated = filtered.slice((currentPage - 1) * REPOS_PER_PAGE, currentPage * REPOS_PER_PAGE);
+
   if (repos.length === 0) return <></>;
 
   return (
@@ -47,7 +72,7 @@ export function RepostList() {
               className="repo-filter"
               placeholder="filter repositories..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => handleSearch(e.target.value)}
             />
             <Button
               onClick={() => setSearch("")}
@@ -61,14 +86,14 @@ export function RepostList() {
             <Button
               variant={"secondary"}
               className={` ${sortBy === "updated" ? "active" : ""} ${selectedFilter === "updated" ? "bg-primary dark:text-background text-white" : ""}`}
-              onClick={() => setSortBy("updated")}
+              onClick={() => handleSort("updated")}
             >
               Recent
             </Button>
             <Button
               variant={"secondary"}
               className={`${sortBy === "stars" ? "active" : ""} ${selectedFilter === "stars" ? "bg-primary dark:text-background text-white" : ""}`}
-              onClick={() => setSortBy("stars")}
+              onClick={() => handleSort("stars")}
             >
               <Star /> Stars
             </Button>
@@ -81,7 +106,7 @@ export function RepostList() {
         </p>
 
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 justify-between">
-          {filtered.map((repo: GithubRepo) => (
+          {paginated.map((repo: GithubRepo) => (
             <RepoCard key={repo.id} {...repo} />
           ))}
         </div>
@@ -103,6 +128,74 @@ export function RepostList() {
           </div>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <Pagination className="mt-5 text-primary">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (currentPage > 1) setCurrentPage((p) => p - 1);
+                }}
+                aria-disabled={currentPage === 1}
+              />
+            </PaginationItem>
+
+            {(() => {
+              const pages: (number | "ellipsis")[] = [];
+
+              if (totalPages <= 7) {
+                for (let i = 1; i <= totalPages; i++) pages.push(i);
+              } else {
+                const left = Math.max(2, currentPage - 1);
+                const right = Math.min(totalPages - 1, currentPage + 1);
+
+                pages.push(1);
+                if (left > 2) pages.push("ellipsis");
+
+                for (let p = left; p <= right; p++) pages.push(p);
+
+                if (right < totalPages - 1) pages.push("ellipsis");
+                pages.push(totalPages);
+              }
+
+              return pages.map((p, idx) =>
+                p === "ellipsis" ? (
+                  <PaginationItem key={`e-${idx}`}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                ) : (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      href="#"
+                      isActive={currentPage === p}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(p as number);
+                      }}
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              );
+            })()}
+
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (currentPage < totalPages) setCurrentPage((p) => p + 1);
+                }}
+                aria-disabled={currentPage === totalPages}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 }
