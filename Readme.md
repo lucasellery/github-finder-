@@ -1,4 +1,4 @@
-# &lt;githubExplorer /&gt;
+# &lt;Github Finder /&gt;
 
 Aplicação React para pesquisar usuários do GitHub e explorar seus repositórios públicos.
 
