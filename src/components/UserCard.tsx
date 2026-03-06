@@ -1,4 +1,4 @@
-type CardProps = {
+type UserCardProps = {
   login: string;
   userName: string;
   avatar_url: string;
@@ -23,15 +23,15 @@ function InfoContainer({
   )
 }
 
-export function Card({
+export function UserCard({
   userName,
   avatar_url,
   login,
   public_repos,
   followers,
-}: CardProps) {
+}: UserCardProps) {
   return (
-    <div className="border shadow-md rounded-lg overflow-hidden w-87.5 sm:max-w-sm">
+    <div className="border shadow-md rounded-lg overflow-hidden w-full md:max-w-87.5">
       <div className="relative bg-primary h-18 rounded-t-lg" />
 
       <div className="relative">

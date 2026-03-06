@@ -2,7 +2,7 @@ import {
   selectUser,
 } from "@/store/github/selectors";
 import { useSelector } from "react-redux";
-import { Card } from "./Card";
+import { UserCard } from "./UserCard";
 
 export function UserProfile() {
   const user = useSelector(selectUser);
@@ -19,8 +19,8 @@ export function UserProfile() {
 
   return (
     <div className="flex items-start">
-      <div className="mt-6">
-        <Card
+      <div className="mt-6 flex items-center justify-center w-full">
+        <UserCard
           userName={user.name || user.login}
           avatar_url={user.avatar_url}
           login={user.login}

@@ -4,7 +4,12 @@ import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Star, TriangleAlert } from "lucide-react";
+import {
+  Star,
+  Trash2,
+  TriangleAlert,
+} from "lucide-react";
+import { RepoCard } from "./RepoCard";
 
 type SortKey = "updated" | "stars";
 
@@ -12,38 +17,23 @@ export function RepostList() {
   const repos = useSelector(selectRepos);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<SortKey>("updated");
+  const [selectedFilter, setSelectedFilter] = useState<string>("");
 
   const filtered = useMemo(() => {
     return repos
-      .filter((r) => r.name.toLowerCase().includes(search.toLowerCase()))
-      .sort((a, b) => {
-        if (sortBy === "stars") return b.stargazers_count - a.stargazers_count;
-        return (
-          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-        );
+      .filter((repo: GithubRepo): boolean => repo.name.toLowerCase().includes(search.toLowerCase()))
+      .sort((a: GithubRepo, b: GithubRepo): number => {
+      if (sortBy === "stars") {
+        setSelectedFilter("stars");
+        return b.stargazers_count - a.stargazers_count;
+      }
+
+      setSelectedFilter("updated");
+      return (
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+      );
       });
   }, [repos, search, sortBy]);
-
-  const formatDate = (iso: string) => {
-    return new Date(iso).toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  };
-
-  const langColor: Record<string, string> = {
-    TypeScript: "#3178c6",
-    JavaScript: "#f1e05a",
-    Python: "#3572A5",
-    Go: "#00ADD8",
-    Rust: "#dea584",
-    Java: "#b07219",
-    CSS: "#563d7c",
-    HTML: "#e34c26",
-    Ruby: "#701516",
-    Swift: "#ffac45",
-  };
 
   if (repos.length === 0) return <></>;
 
@@ -51,25 +41,33 @@ export function RepostList() {
     <div className="mt-6">
       <div className="">
         <div className="space-y-4">
-          <Input
-            type="text"
-            className="repo-filter"
-            placeholder="filter repositories..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <div className="relative">
+            <Input
+              type="text"
+              className="repo-filter"
+              placeholder="filter repositories..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <Button
+              onClick={() => setSearch("")}
+              className="absolute right-0 bg-transparent border-none hover:bg-violet-300 focus:ring-0"
+            >
+              <Trash2 className="text-primary" size={18} />
+            </Button>
+          </div>
 
           <div className="flex gap-2 place-self-end">
             <Button
               variant={"secondary"}
-              className={`sort-btn ${sortBy === "updated" ? "active" : ""}`}
+              className={` ${sortBy === "updated" ? "active" : ""} ${selectedFilter === "updated" ? "bg-primary dark:text-background text-white" : ""}`}
               onClick={() => setSortBy("updated")}
             >
               Recent
             </Button>
             <Button
               variant={"secondary"}
-              className={`sort-btn ${sortBy === "stars" ? "active" : ""}`}
+              className={`${sortBy === "stars" ? "active" : ""} ${selectedFilter === "stars" ? "bg-primary dark:text-background text-white" : ""}`}
               onClick={() => setSortBy("stars")}
             >
               <Star /> Stars
@@ -82,47 +80,24 @@ export function RepostList() {
           repositórios
         </p>
 
-        <div className="grid gap-4 grid-cols-2 justify-between">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 justify-between">
           {filtered.map((repo: GithubRepo) => (
-            <a
-              key={repo.id}
-              href={repo.html_url}
-              target="_blank"
-              rel="noreferrer"
-              className="border"
-            >
-              <div className="repo-card-top">
-                <span className="repo-name">{repo.name}</span>
-                {repo.language && (
-                  <span
-                    className="repo-lang"
-                    style={{ color: langColor[repo.language] ?? "#aaa" }}
-                  >
-                    ● {repo.language}
-                  </span>
-                )}
-              </div>
-
-              {repo.description && (
-                <p className="repo-desc">{repo.description}</p>
-              )}
-
-              <div className="repo-card-bottom">
-                <span className="repo-stars">★ {repo.stargazers_count}</span>
-                <span className="repo-date">
-                  ↻ {formatDate(repo.updated_at)}
-                </span>
-              </div>
-            </a>
+            <RepoCard key={repo.id} {...repo} />
           ))}
         </div>
 
         {filtered.length === 0 && (
           <div className="flex items-center flex-col gap-2 mt-10 text-chart-5 dark:text-alert">
             <TriangleAlert className="" />
-            <span className="font-medium">Nenhum repositório combina com o seu filtro.</span>
+            <span className="font-medium">
+              Nenhum repositório combina com o seu filtro.
+            </span>
 
-            <Button variant="outline" className="border-alert dark:border-alert" onClick={() => setSearch("")}>
+            <Button
+              variant="outline"
+              className="border-alert dark:border-alert"
+              onClick={() => setSearch("")}
+            >
               Limpar Filtros
             </Button>
           </div>
