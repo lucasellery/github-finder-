@@ -2,7 +2,7 @@
 
 Aplicação React para pesquisar usuários do GitHub e explorar seus repositórios públicos.
 
-![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)
 ![Redux](https://img.shields.io/badge/Redux-4-764ABC?style=flat-square&logo=redux)
 ![Redux Saga](https://img.shields.io/badge/Redux--Saga-1-86D46B?style=flat-square)
