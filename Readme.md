@@ -52,11 +52,11 @@ UI → Action → Saga → API → Reducer → UI
 ```
 src/
 ├── components/
-│   ├── SearchBar/        # Input + botão de busca, dispara a action
+│   ├── InputButtonGroup/        # Input + botão de busca, dispara a action
 │   ├── UserProfile/      # Exibe dados do usuário
 │   └── RepoList/         # Lista paginada com filtro e ordenação
-├── hooks/
-│   └── useDebounce.ts    # Hook utilitário de debounce
+│   └── RepoCard/         # Card com detalhes de um repositório
+│   └── UserCard/         # Card com detalhes de um usuário
 ├── store/
 │   ├── index.ts          # Configuração do store + saga middleware
 │   ├── rootReducer.ts    # Combina os reducers + exporta RootState
